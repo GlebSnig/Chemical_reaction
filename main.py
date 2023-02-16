@@ -40,7 +40,7 @@ def Physics(molList):
             v1 = pg.math.Vector2(mol1.x0, mol1.y0)
             v2 = pg.math.Vector2(mol2.x0, mol2.y0)
             nv = v2 - v1
-            if v1.distance_to(v2) < mol1.r + mol2.r and nv != {0, 0}:  # пофиксить вылетает ошибка когда шар в шаре
+            if v1.distance_to(v2) < mol1.r + mol2.r and nv != [0, 0]:
                 if molsPair in allPair:
                     delMols.add(i)
                     delMols.add(j)
