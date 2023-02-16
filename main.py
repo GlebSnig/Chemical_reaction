@@ -3,16 +3,16 @@ import random
 import pygame as pg
 import time
 
-
 class Molecule:
     def __init__(self, type, x0, y0):
         self.type = type
-        self.vx = random.randint(-3, 3)
-        self.vy = random.randint(-3, 3)
+        self.r = None
+        self.color = None
         self.x0 = x0
         self.y0 = y0
-        self.r = 12
-        match type: # убрать в спаун
+        self.vx = random.randint(1, 2)
+        self.vy = random.randint(1, 2)
+        match type:
             case 'O2':
                 self.r = 15
                 self.color = 'red'
@@ -24,54 +24,61 @@ class Molecule:
                 self.color = 'LightSkyBlue2'
             case 'H':
                 self.r = 9
-                self.color = 'gray29'
+                self.color = 'green'
             case 'O':
                 self.r = 11
                 self.color = 'DarkOrchid'
+            case 'H2O':
+                self.r = 20
+                self.color = 'pink'
 
-
-    def molMove(self):
-        self.x0 += self.vx
-        self.y0 += self.vy
-        self.ball = window.create_oval(self.x0 - self.r, self.y0 - self.r, self.x0 + self.r, self.y0 + self.r, fill= self.color)
+def MolMove(molList):
+    '''replace'''
+    for mol in molList:
+        mol.x0 += mol.vx
+        mol.y0 += mol.vy
+        mol.ball = window.create_oval(mol.x0 - mol.r, mol.y0 - mol.r, mol.x0 + mol.r, mol.y0 + mol.r, fill= mol.color)
 
 def Spawn(molList):
     '''original molecules'''
-    O2_count = 15
-    H2_count = 0
-    OH_count = 0
-    H_count = 0
-    O_count = 0
-    for x_spawn in range(30, wx, 30):
-        for y_spawn in range(30, wy, 30):
-            type = 'default'
-            m = Molecule(type, x_spawn, y_spawn)
+    O2_count = 7
+    H2_count = 18
+    OH_count = 1
+    H_count = 3
+    O_count = 3
+    break_out_flag = False
+    for x_spawn in range(50, wx, 150):
+        for y_spawn in range(50, wy, 150):
             if (O2_count > 0):
-                m.type = 'O2'
+                type = 'O2'
+                molList.append(Molecule(type, x_spawn, y_spawn))
                 O2_count -= 1
                 continue
             if (H2_count > 0):
-                m.type = 'H2'
+                type = 'H2'
+                molList.append(Molecule(type, x_spawn, y_spawn))
                 H2_count -= 1
                 continue
             if (OH_count > 0):
-                m.type = 'OH'
+                type = 'OH'
+                molList.append(Molecule(type, x_spawn, y_spawn))
                 OH_count -= 1
                 continue
             if (H_count > 0):
-                m.type = 'H'
+                type = 'H'
+                molList.append(Molecule(type, x_spawn, y_spawn))
                 H_count -= 1
                 continue
             if (O_count > 0):
-                m.type = 'O'
+                type = 'O'
+                molList.append(Molecule(type, x_spawn, y_spawn))
                 O_count -= 1
 
-            molList.append(m)
-        #     if O2_count + H2_count + OH_count + O_count + H_count == 0:
-        #         break_out_flag = True
-        #         break
-        # if break_out_flag:
-        #     break
+            if O2_count + H2_count + OH_count + O_count + H_count == 0:
+                break_out_flag = True
+                break
+        if break_out_flag:
+            break
 
 def Physics(molList):
     '''blows on walls'''
@@ -100,10 +107,8 @@ def Physics(molList):
                 if tuple(molsPair) in allPair:
                     delMols.add(i)
                     delMols.add(j)
-
-                    addMols.append(Molecule(allPair[tuple(molsPair)][0]))
-                    addMols.append(Molecule(allPair[tuple(molsPair)][1]))
-
+                    addMols.append(Molecule(allPair[tuple(molsPair)][0], mol1.x0 - mol1.vx * 3, mol1.y0 - mol1.vy * 3))
+                    addMols.append(Molecule(allPair[tuple(molsPair)][1], mol2.x0 - mol2.vx * 3, mol2.y0 - mol2.vy * 3))
                 else:
                     m1 = pg.math.Vector2(mol1.vx, mol1.vy).reflect(nv)
                     m2 = pg.math.Vector2(mol2.vx, mol2.vy).reflect(nv)
@@ -120,8 +125,8 @@ def Physics(molList):
 
 '''window construct'''
 root = tk.Tk()
-wx = 1000
-wy = 600
+wx = 1100
+wy = 680
 window = tk.Canvas(root, width=wx, height=wy)
 window.pack()
 
@@ -135,11 +140,7 @@ Spawn(molList)
 while True:
     window.delete('all')
     Physics(molList)
-    for i in range(len(molList)):
-        molList[i].molMove()
+    MolMove(molList)
     root.update()
     time.sleep(0.0001)
 root.mainloop()
-
-#TODO сделать конструкторы для разых молекул, так чтобы подавался только тип и понему определялись остальные параметры
-#TODO сделать спаун молекул матрицей
