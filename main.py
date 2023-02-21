@@ -32,17 +32,20 @@ class Molecule:
                 self.r = 20
                 self.color = 'pink'
 
-def MolMove(window):
+def MolMove(molList, window):
     '''replace'''
     for mol in molList:
         mol.x0 += mol.vx
         mol.y0 += mol.vy
         mol.ball = window.create_oval(mol.x0 - mol.r, mol.y0 - mol.r, mol.x0 + mol.r, mol.y0 + mol.r, fill= mol.color)
 
-def Spawn(defaultMol):
+def Spawn(molList, wx, wy):
     '''original molecules'''
-    O2_count = defaultMol[0]
-    H2_count = defaultMol[1]
+    O2_count = 7
+    H2_count = 18
+    OH_count = 1
+    H_count = 3
+    O_count = 3
     break_out_flag = False
     for x_spawn in range(50, wx, 150):
         for y_spawn in range(50, wy, 150):
@@ -56,13 +59,28 @@ def Spawn(defaultMol):
                 molList.append(Molecule(type, x_spawn, y_spawn))
                 H2_count -= 1
                 continue
-            if O2_count + H2_count == 0:
+            if (OH_count > 0):
+                type = 'OH'
+                molList.append(Molecule(type, x_spawn, y_spawn))
+                OH_count -= 1
+                continue
+            if (H_count > 0):
+                type = 'H'
+                molList.append(Molecule(type, x_spawn, y_spawn))
+                H_count -= 1
+                continue
+            if (O_count > 0):
+                type = 'O'
+                molList.append(Molecule(type, x_spawn, y_spawn))
+                O_count -= 1
+
+            if O2_count + H2_count + OH_count + O_count + H_count == 0:
                 break_out_flag = True
                 break
         if break_out_flag:
             break
 
-def Physics():
+def Physics(molList, allPair, wx, wy):
     '''blows on walls'''
     for mol in molList:
         if mol.x0 + mol.r >= wx and mol.vx > 0:
@@ -105,26 +123,25 @@ def Physics():
     for mol in addMols:
         molList.append(mol)
 
-'''settings'''
-wx = 1100
-wy = 680
-molList = []
-allPair = {('H2', 'O2'):('OH', 'OH'), ('O2', 'H2'):('OH', 'OH'),('OH', 'H2'):('H2O', 'H'), ('H2', 'OH'):('H2O', 'H'),\
-           ('H', 'O2'):('OH', 'O'), ('O2', 'H'):('OH', 'O'), ('O', 'H2'):('OH', 'H'), ('H2', 'O'):('OH', 'H')}
-
-def simulate(defaultMol):
+def simulate():
     '''window construct'''
     root = tk.Tk()
-    root.title("Симуляция")
+    wx = 1100
+    wy = 680
     window = tk.Canvas(root, width=wx, height=wy)
     window.pack()
+
+    '''settings'''
+    molList = []
+    allPair = {('H2', 'O2'):('OH', 'OH'), ('O2', 'H2'):('OH', 'OH'),('OH', 'H2'):('H2O', 'H'), ('H2', 'OH'):('H2O', 'H'),\
+               ('H', 'O2'):('OH', 'O'), ('O2', 'H'):('OH', 'O'), ('O', 'H2'):('OH', 'H'), ('H2', 'O'):('OH', 'H')}
+
     """main"""
-    molList.clear()
-    Spawn(defaultMol)
+    Spawn(molList, wx, wy)
     while True:
         window.delete('all')
-        Physics()
-        MolMove(window)
+        Physics(molList, allPair, wx, wy)
+        MolMove(molList, window)
         root.update()
         time.sleep(0.0001)
     root.mainloop()
