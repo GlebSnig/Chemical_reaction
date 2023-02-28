@@ -1,14 +1,11 @@
-from tkinter import *
+import tkinter as tk
 from threading import Thread
 import main
 
-def set_params(defaultMols):
+def set_params():
+    defaultMols.clear()
     defaultMols.append(int(entry1.get()))
     defaultMols.append(int(entry2.get()))
-    defaultMols.append(int(entry3.get()))
-    defaultMols.append(int(entry4.get()))
-    defaultMols.append(int(entry5.get()))
-    print(defaultMols)
 
 def task():
     thr = Thread(target= main.simulate(defaultMols), daemon= True)
@@ -16,60 +13,56 @@ def task():
 
 defaultMols= []
 
-root = Tk()
-root.title("Цепная реакция. Ввод параметров")
-root.geometry("600x600")
+root = tk.Tk()
+root.title("Цепная реакция")
+root.geometry("320x260")
 
-text = Label(text="Начальное число молекул каждого типа")
-text.pack(anchor=NW, padx=10, pady=0)
-
-text1 = Label(text="Н2")
-text1.pack(anchor=NW, padx=10, pady=0)
-
-entry1 = Entry()
+text = tk.Label(text="Цепная реакция ввод параметров")
+text.grid(row=0, column=0, sticky=tk.W, pady=10, padx=10)
+text1 = tk.Label(text="Количество молекул Н2")
+text1.grid(row=1, column=0, sticky=tk.W, pady=10, padx=10)
+entry1 = tk.Entry()
 entry1.insert(0, '0')
-entry1.pack(anchor=NW, padx=10, pady=5)
-
-text2 = Label(text="02")
-text2.pack(anchor=NW, padx=10, pady=0)
-
-entry2 = Entry()
+entry1.grid(row=2, column=0, sticky=tk.W, pady=10, padx=10)
+text2 = tk.Label(text="Количество молекул O2")
+text2.grid(row=3, column=0, sticky=tk.W, pady=10, padx=10)
+entry2 = tk.Entry()
 entry2.insert(0, '0')
-entry2.pack(anchor=NW, padx=10, pady=5)
+entry2.grid(row=4, column=0, sticky=tk.W, pady=10, padx=10)
 
-text3 = Label(text="OH")
-text3.pack(anchor=NW, padx=10, pady=0)
+btn1 = tk.Button(text="Ввод", command=set_params)
+btn1.grid(row=5, column=0, sticky=tk.W, pady=10, padx=10)
+btn2 = tk.Button(text="Запуск", command=task)
+btn2.place(x=70, y=210)
 
-entry3 = Entry()
-entry3.insert(0, '0')
-entry3.pack(anchor=NW, padx=10, pady=5)
+label1 = tk.Label(text="O2 ")
+label1.place(x=250, y=10)
+colour1 = tk.Label(text="   ", background = 'red', borderwidth=1, relief="solid")
+colour1.place(x=285, y=10)
 
-text4 = Label(text="H")
-text4.pack(anchor=NW, padx=10, pady=0)
+label2= tk.Label(text="H2 ")
+label2.place(x=250, y=50)
+colour2 = tk.Label(text="   ", background = 'blue', borderwidth=1, relief="solid")
+colour2.place(x=285, y=50)
 
-entry4 = Entry()
-entry4.insert(0, '0')
-entry4.pack(anchor=NW, padx=10, pady=5)
+label3 = tk.Label(text="OH ")
+label3.place(x=250, y=90)
+colour3 = tk.Label(text="   ", background = 'LightSkyBlue2', borderwidth=1, relief="solid")
+colour3.place(x=285, y=90)
 
-text5 = Label(text="O")
-text5.pack(anchor=NW, padx=10, pady=0)
+label4 = tk.Label(text="H ")
+label4.place(x=250, y=130)
+colour4 = tk.Label(text="   ", background = 'green', borderwidth=1, relief="solid")
+colour4.place(x=285, y=130)
 
-entry5 = Entry()
-entry5.insert(0, '0')
-entry5.pack(anchor=NW, padx=10, pady=5)
+label5 = tk.Label(text="O ")
+label5.place(x=250, y=170)
+colour5 = tk.Label(text="   ", background = 'DarkOrchid', borderwidth=1, relief="solid")
+colour5.place(x=285, y=170)
 
-btn1 = Button(text="Ввод", command=set_params(defaultMols))
-btn1.pack(anchor=NW, padx=10, pady=5)
-
-label1 = Label()
-label1.pack(anchor=NW, padx=6, pady=6)
-
-label2 = Label()
-label2.pack(anchor=NW, padx=6, pady=6)
-
-
-btn2 = Button(text="Запуск", command=task)
-btn2.pack(anchor=NW, padx=10, pady=5)
-
+label6 = tk.Label(text="H2O ")
+label6.place(x=250, y=210)
+colour6 = tk.Label(text="   ", background = 'pink', borderwidth=1, relief="solid")
+colour6.place(x=285, y=210)
 
 root.mainloop()

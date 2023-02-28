@@ -10,7 +10,7 @@ class Molecule:
         self.color = None
         self.x0 = x0
         self.y0 = y0
-        self.vx = random.randint(1, 2)
+        self.vx = random.randint(-1, 2)
         self.vy = random.randint(1, 2)
         match type:
             case 'O2':
@@ -43,9 +43,6 @@ def Spawn(defaultMol):
     '''original molecules'''
     O2_count = defaultMol[0]
     H2_count = defaultMol[1]
-    OH_count = defaultMol[2]
-    H_count = defaultMol[3]
-    O_count = defaultMol[4]
     break_out_flag = False
     for x_spawn in range(50, wx, 150):
         for y_spawn in range(50, wy, 150):
@@ -59,22 +56,7 @@ def Spawn(defaultMol):
                 molList.append(Molecule(type, x_spawn, y_spawn))
                 H2_count -= 1
                 continue
-            if (OH_count > 0):
-                type = 'OH'
-                molList.append(Molecule(type, x_spawn, y_spawn))
-                OH_count -= 1
-                continue
-            if (H_count > 0):
-                type = 'H'
-                molList.append(Molecule(type, x_spawn, y_spawn))
-                H_count -= 1
-                continue
-            if (O_count > 0):
-                type = 'O'
-                molList.append(Molecule(type, x_spawn, y_spawn))
-                O_count -= 1
-
-            if O2_count + H2_count + OH_count + O_count + H_count == 0:
+            if O2_count + H2_count == 0:
                 break_out_flag = True
                 break
         if break_out_flag:
@@ -103,12 +85,13 @@ def Physics():
             v1 = pg.math.Vector2(mol1.x0, mol1.y0)
             v2 = pg.math.Vector2(mol2.x0, mol2.y0)
             nv = v2 - v1
-            if v1.distance_to(v2) < mol1.r + mol2.r and nv != [0, 0]:
+            if v1.distance_to(v2) <= mol1.r + mol2.r and nv != [0, 0]:
                 if tuple(molsPair) in allPair:
                     delMols.add(i)
                     delMols.add(j)
-                    addMols.append(Molecule(allPair[tuple(molsPair)][0], mol1.x0 - mol1.vx * 3, mol1.y0 - mol1.vy * 3))
-                    addMols.append(Molecule(allPair[tuple(molsPair)][1], mol2.x0 - mol2.vx * 3, mol2.y0 - mol2.vy * 3))
+                    k = 4
+                    addMols.append(Molecule(allPair[tuple(molsPair)][0], mol1.x0 - mol1.vx * k, mol1.y0 - mol1.vy * k))
+                    addMols.append(Molecule(allPair[tuple(molsPair)][1], mol2.x0 - mol2.vx * k, mol2.y0 - mol2.vy * k))
                 else:
                     m1 = pg.math.Vector2(mol1.vx, mol1.vy).reflect(nv)
                     m2 = pg.math.Vector2(mol2.vx, mol2.vy).reflect(nv)
@@ -129,12 +112,15 @@ wy = 680
 molList = []
 allPair = {('H2', 'O2'):('OH', 'OH'), ('O2', 'H2'):('OH', 'OH'),('OH', 'H2'):('H2O', 'H'), ('H2', 'OH'):('H2O', 'H'),\
            ('H', 'O2'):('OH', 'O'), ('O2', 'H'):('OH', 'O'), ('O', 'H2'):('OH', 'H'), ('H2', 'O'):('OH', 'H')}
+
 def simulate(defaultMol):
     '''window construct'''
     root = tk.Tk()
+    root.title("Симуляция")
     window = tk.Canvas(root, width=wx, height=wy)
     window.pack()
     """main"""
+    molList.clear()
     Spawn(defaultMol)
     while True:
         window.delete('all')
